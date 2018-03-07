@@ -1,11 +1,11 @@
 ![DevMaker](https://i.imgur.com/Yh0YIly.png)
 
-#Weather App - DevMaker
+# Weather App - DevMaker
 
-##Sobre
+## Sobre
 App que mostra informações de temperatura e previsão do tempo, utilizado como avaliação pela DevMaker.
 
-##Funcionalidades
+## Funcionalidades
 * Listar a previsão do tempo de Curitiba, Florianópolis e Quedas do Iguaçu;
 * Acessar uma nova tela com detalhes da previsão do tempo da cidade;
 * Implementação do Google Maps para apresentar a localização atual do usuário, bem como as informações do seu local atual;
@@ -17,7 +17,7 @@ App que mostra informações de temperatura e previsão do tempo, utilizado como
 * Biblioteca **[Picasso](http://square.github.io/picasso/)** para processamento de imagens;
 * API **[Open Weather Map](https://openweathermap.org/api)** para recuperação de informações de previsão do tempo;
 
-##Download
+## Download
 * Para utilizar a demo, o dispositivo precisará dos seguintes requisitos para garantir a funcionalidade estável do app:
  - Sistema Operacional com versão igual ou superior ao Lollipop (5.0 - API 21);
  - Google Play Services instalado;
