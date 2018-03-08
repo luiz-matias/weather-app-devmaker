@@ -64,10 +64,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if(newState == BottomSheetBehavior.STATE_HIDDEN){
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     fabDetalhes.setVisibility(View.GONE);
                 }
-                if(newState == BottomSheetBehavior.STATE_EXPANDED){
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     fabDetalhes.setVisibility(View.VISIBLE);
                 }
             }
@@ -164,7 +164,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     //adiciona os markers das cidades, após o carregamento do request
     private void addMarkers(ArrayList<Cidade> cidades) {
 
-        for(int i = 0; i < cidades.size(); i++){
+        for (int i = 0; i < cidades.size(); i++) {
             Cidade cidade = cidades.get(i);
             map.addMarker(new MarkerOptions()
                     .position(cidade.getCoordenadas())
@@ -201,8 +201,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             super.onPostExecute(retorno);
 
             //verifica o retorno
-            if(retorno != null) {
-                try{
+            if (retorno != null) {
+                try {
 
                     //alimenta as informações obtidas em um array de cidades
                     JSONObject object = new JSONObject(retorno);
@@ -210,7 +210,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     JSONArray jsonCidades = object.getJSONArray("list");
                     ArrayList<Cidade> cidades = new ArrayList<>();
 
-                    for(int i = 0; i < jsonCidades.length(); i++){
+                    for (int i = 0; i < jsonCidades.length(); i++) {
 
                         //alimenta informações da cidade
                         Cidade cidade = new Cidade();
@@ -238,11 +238,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     //adiciona markers das cidades no mapa
                     addMarkers(cidades);
 
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(getContext(), "Houve um problema ao realizar a requisição!", Toast.LENGTH_LONG).show();
                 }
-            }else{
+            } else {
                 Toast.makeText(getContext(), "Houve um problema ao realizar a requisição!", Toast.LENGTH_LONG).show();
             }
 
