@@ -24,7 +24,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-
+        //administra o título de cada aba do tablayout
         CharSequence string;
         switch (position){
             case 0:
@@ -43,7 +43,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        //Returning the current tabs
+        //Inicia as fragments referentes a cada aba
         switch (position) {
             case 0:
                 MapFragment mapTab = new MapFragment();

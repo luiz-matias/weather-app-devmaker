@@ -35,14 +35,17 @@ public class ListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_list, container, false);
 
+        //referencia elementos do layout
         recyclerViewCidades = (RecyclerView) view.findViewById(R.id.recyclerViewCidades);
         linearLayoutSemInternet = (LinearLayout) view.findViewById(R.id.linearLayoutSemInternet);
         relativeLayoutCidades = (RelativeLayout) view.findViewById(R.id.relativeLayoutCidades);
         buttonTentarNovamente = (Button) view.findViewById(R.id.buttonTentarNovamente);
         swipeRefreshLayoutAtualizar = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayoutAtualizar);
 
-        swipeRefreshLayoutAtualizar.setColorScheme(R.color.colorAccent);
+        //seta a cor do swype refresh
+        swipeRefreshLayoutAtualizar.setColorSchemeColors(getContext().getResources().getColor(R.color.colorAccent));
 
+        //ao atualizar, faz um fade out das informações da tela e inicia a requisição
         swipeRefreshLayoutAtualizar.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -69,6 +72,7 @@ public class ListFragment extends Fragment {
             }
         });
 
+        //inicia a requisição quando o usuário tentar novamente
         buttonTentarNovamente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,7 +80,7 @@ public class ListFragment extends Fragment {
             }
         });
 
-
+        //Inicia animação de fade out na primeira requisição
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -101,8 +105,9 @@ public class ListFragment extends Fragment {
         return view;
     }
 
+    //método que configura e apresenta informações do recycler view
     private void loadList(ArrayList<Cidade> cidades) {
-        CidadesAdapter cidadesAdapter = new CidadesAdapter(getContext(), getActivity(), cidades);
+        CidadesAdapter cidadesAdapter = new CidadesAdapter(getContext(), cidades);
         recyclerViewCidades.setAdapter(cidadesAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -112,6 +117,7 @@ public class ListFragment extends Fragment {
         recyclerViewCidades.setItemAnimator(new DefaultItemAnimator());
     }
 
+    //Asynctask da requisição
     private class requestCidades extends AsyncTask<String, Void, String> {
 
         @Override
@@ -130,6 +136,8 @@ public class ListFragment extends Fragment {
             Log.d("retorno", "onPostExecute: retorno:\n"+retorno);
             if(retorno != null) {
                 try{
+
+                    //trata informações obtidas e as alimenta em um array de cidades
 
                     linearLayoutSemInternet.setVisibility(View.GONE);
                     relativeLayoutCidades.setVisibility(View.VISIBLE);
@@ -161,7 +169,7 @@ public class ListFragment extends Fragment {
 
                         cidade.setClima(clima);
 
-                        //Simulador para fotos dos estabelecimentos
+                        //Simulação de que a API está retornando fotos, para melhor demonstração do design e processamento de imagem
                         switch (cidade.getNome()){
                             case "Curitiba":
                                 cidade.setFoto("https://www.promoview.com.br/uploads/2017/07/images/Julho/09.07/Air_Promo_cria_novo_conceito_para_o_lancamento_do____Outubro_Rosa_Curitiba_2017_____2.jpg");
@@ -180,11 +188,13 @@ public class ListFragment extends Fragment {
                         cidades.add(cidade);
                     }
 
+                    //carrega o recycler view
                     loadList(cidades);
 
 
 
                 }catch (Exception e) {
+                    //erro na requisição
                     relativeLayoutCidades.clearAnimation();
                     linearLayoutSemInternet.setVisibility(View.VISIBLE);
                     relativeLayoutCidades.setVisibility(View.GONE);
@@ -192,6 +202,7 @@ public class ListFragment extends Fragment {
                     e.printStackTrace();
                 }
             }else{
+                //erro na requisição
                 relativeLayoutCidades.clearAnimation();
                 linearLayoutSemInternet.setVisibility(View.VISIBLE);
                 relativeLayoutCidades.setVisibility(View.GONE);

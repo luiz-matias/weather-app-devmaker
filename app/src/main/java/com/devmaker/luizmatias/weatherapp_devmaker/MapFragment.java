@@ -41,11 +41,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, LocationListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private View view;
     private GoogleMap map;
-    private LatLng coordenadas_usuario = new LatLng(-1,-1);
     private BottomSheetBehavior bottomSheetBehavior;
     private LinearLayout bottom_sheet;
     private FloatingActionButton fabDetalhes;
@@ -54,12 +53,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.tab_map, container, false);
 
+        //instancia componentes do layout
         bottom_sheet = view.findViewById(R.id.bottom_sheet);
         fabDetalhes = view.findViewById(R.id.fabDetalhes);
+
+        //referencia o behavior a view do bottom sheet
         bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet);
+
+        //adiciona callback de controle para o fab manter-se sincronizado com o bottom sheet
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if(newState == BottomSheetBehavior.STATE_HIDDEN){
+                    fabDetalhes.setVisibility(View.GONE);
+                }
+                if(newState == BottomSheetBehavior.STATE_EXPANDED){
+                    fabDetalhes.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        //inicia o bottom sheet e o fab como oculto
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         fabDetalhes.setVisibility(View.GONE);
 
+        //prepara o mapa
         SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
 
@@ -91,27 +114,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
             }
         });
 
-        //inicializa LocationManager
-        LocationManager locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
-
-        //determina o melhor provedor de gps
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setCostAllowed(true);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        String provider = locationManager.getBestProvider(criteria, true);
-        if(provider != null) {
-            locationManager.requestLocationUpdates(provider, 60*1000, 20, this);
-        }
-
+        //click no marker do mapa
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
 
+                //alimenta o bottom sheet com informações, e depois o expande
                 Cidade cidade = (Cidade) marker.getTag();
-
                 TextView textViewNome = view.findViewById(R.id.textViewNome);
                 TextView textViewDescricao = view.findViewById(R.id.textViewDescricao);
                 TextView textViewTemperatura = view.findViewById(R.id.textViewTemperatura);
@@ -126,6 +135,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
                 fabDetalhes.setVisibility(View.VISIBLE);
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
+                //inicia o click do FAB para abrir a tela de detalhes com informações de previsão do tempo
                 fabDetalhes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -137,6 +147,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
             }
         });
 
+        //quando o usuário fecha o info window do marker, oculta o bottom sheet e o fab
         map.setOnInfoWindowCloseListener(new GoogleMap.OnInfoWindowCloseListener() {
             @Override
             public void onInfoWindowClose(Marker marker) {
@@ -150,7 +161,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
     }
 
-    //adiciona markers das cidades, após o carregamento do request
+    //adiciona os markers das cidades, após o carregamento do request
     private void addMarkers(ArrayList<Cidade> cidades) {
 
         for(int i = 0; i < cidades.size(); i++){
@@ -163,33 +174,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        coordenadas_usuario = new LatLng(location.getLatitude(), location.getLongitude());
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
+    //Asynctask que faz a requisição
     private class requestCidades extends AsyncTask<String, Void, String> {
 
         ProgressDialog progress;
 
         @Override
         protected void onPreExecute() {
-
+            //inicia um progress dialog pra requisição
             progress = new ProgressDialog(getContext());
             progress.setMessage("Carregando cidades...");
             progress.setTitle("Aguarde");
@@ -207,9 +199,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         @Override
         protected void onPostExecute(String retorno) {
             super.onPostExecute(retorno);
-            Log.d("retorno", "onPostExecute: retorno:\n"+retorno);
+
+            //verifica o retorno
             if(retorno != null) {
                 try{
+
+                    //alimenta as informações obtidas em um array de cidades
                     JSONObject object = new JSONObject(retorno);
 
                     JSONArray jsonCidades = object.getJSONArray("list");
@@ -217,11 +212,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
                     for(int i = 0; i < jsonCidades.length(); i++){
 
+                        //alimenta informações da cidade
                         Cidade cidade = new Cidade();
                         cidade.setId(jsonCidades.getJSONObject(i).getInt("id"));
                         cidade.setNome(jsonCidades.getJSONObject(i).getString("name"));
                         cidade.setCoordenadas(new LatLng(jsonCidades.getJSONObject(i).getJSONObject("coord").getDouble("lat"), jsonCidades.getJSONObject(i).getJSONObject("coord").getDouble("lon")));
 
+                        //alimenta informações do clima da cidade
                         Clima clima = new Clima();
                         clima.setDescricao(jsonCidades.getJSONObject(i).getJSONArray("weather").getJSONObject(0).getString("description"));
 
@@ -235,25 +232,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
                         cidade.setClima(clima);
 
-                        //Simulador para fotos dos estabelecimentos
-                        switch (cidade.getNome()){
-                            case "Curitiba":
-                                cidade.setFoto("https://www.promoview.com.br/uploads/2017/07/images/Julho/09.07/Air_Promo_cria_novo_conceito_para_o_lancamento_do____Outubro_Rosa_Curitiba_2017_____2.jpg");
-                                break;
-                            case "Florianópolis":
-                                cidade.setFoto("https://www.redesulhospedagens.com.br/sistema/admin/media/uploads/cidades/ponte-cartao-postal-floripa.jpg");
-                                break;
-                            case "Ivaiporã":
-                                cidade.setFoto("http://diocesedeapucarana.com.br/portal/userfiles/paroquias/1351055279_a54573b85f_b.jpg");
-                                break;
-                            default:
-                                cidade.setFoto("");
-                                break;
-                        }
-
                         cidades.add(cidade);
                     }
 
+                    //adiciona markers das cidades no mapa
                     addMarkers(cidades);
 
                 }catch (Exception e) {
