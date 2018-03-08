@@ -32,10 +32,11 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="10dp"
+                android:clipToPadding="false"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <ImageView
                     android:layout_width="96dp"

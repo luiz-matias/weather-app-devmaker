@@ -12,9 +12,9 @@ import okhttp3.Response;
 
 public class Requests {
 
-    private String API_KEY = "9c86c1dbd23759616d140286f15459c3";
+    private static String API_KEY = "9c86c1dbd23759616d140286f15459c3";
 
-    public String GET(String url){
+    public static String GET(String url){
         try{
 
             OkHttpClient client = new OkHttpClient();

@@ -1,5 +1,7 @@
 package com.devmaker.luizmatias.weatherapp_devmaker;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by Luiz Matias on 08/03/2018.
  */
@@ -7,6 +9,7 @@ package com.devmaker.luizmatias.weatherapp_devmaker;
 public class Cidade {
 
     private int id; //id da cidade, recebido pela API
+    private LatLng coordenadas; //coordenadas da cidade
     private String nome; //nome da cidade
     private String foto; //foto da cidade (link da foto)
     private Clima clima; //clima da cidade
@@ -17,6 +20,14 @@ public class Cidade {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public LatLng getCoordenadas() {
+        return coordenadas;
+    }
+
+    public void setCoordenadas(LatLng coordenadas) {
+        this.coordenadas = coordenadas;
     }
 
     public String getNome() {
