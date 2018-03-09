@@ -8,6 +8,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.transition.Explode;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +43,8 @@ public class ListFragment extends Fragment {
         relativeLayoutCidades = (RelativeLayout) view.findViewById(R.id.relativeLayoutCidades);
         buttonTentarNovamente = (Button) view.findViewById(R.id.buttonTentarNovamente);
         swipeRefreshLayoutAtualizar = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayoutAtualizar);
+
+        getActivity().getWindow().setExitTransition(new Fade());
 
         //seta a cor do swype refresh
         swipeRefreshLayoutAtualizar.setColorSchemeColors(getContext().getResources().getColor(R.color.colorAccent));
@@ -107,7 +111,7 @@ public class ListFragment extends Fragment {
 
     //método que configura e apresenta informações do recycler view
     private void loadList(ArrayList<Cidade> cidades) {
-        CidadesAdapter cidadesAdapter = new CidadesAdapter(getContext(), cidades);
+        CidadesAdapter cidadesAdapter = new CidadesAdapter(getContext(), getActivity(), cidades);
         recyclerViewCidades.setAdapter(cidadesAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());

@@ -2,6 +2,9 @@ package com.devmaker.luizmatias.weatherapp_devmaker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +22,14 @@ public class CidadesAdapter extends RecyclerView.Adapter<CidadesAdapter.ViewHold
     private ArrayList<Cidade> cidades;
     private LayoutInflater inflater;
     private Context context;
+    private Activity activity;
 
-    public CidadesAdapter(Context context, ArrayList<Cidade> cidades){
+    public CidadesAdapter(Context context, Activity activity, ArrayList<Cidade> cidades){
         //recebe informações da tela que chamou o adapter
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.cidades = cidades;
+        this.activity = activity;
 
     }
 
@@ -86,7 +91,18 @@ public class CidadesAdapter extends RecyclerView.Adapter<CidadesAdapter.ViewHold
             buttonDetalhes.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "Ação de detalhes do clima", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(context, DetalhesActivity.class);
+                    intent.putExtra("background_image", ViewCompat.getTransitionName(imageViewBackgroundCidade));
+
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            activity,
+                            imageViewBackgroundCidade,
+                            ViewCompat.getTransitionName(imageViewBackgroundCidade));
+
+                    context.startActivity(intent, options.toBundle());
+
+                    context.startActivity(new Intent(context, DetalhesActivity.class));
                 }
             });
 

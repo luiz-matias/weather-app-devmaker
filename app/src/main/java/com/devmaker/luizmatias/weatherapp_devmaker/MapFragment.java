@@ -3,6 +3,7 @@ package com.devmaker.luizmatias.weatherapp_devmaker;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -139,7 +140,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 fabDetalhes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getContext(), "Ação de detalhes do clima", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(getContext(), DetalhesActivity.class));
                     }
                 });
 

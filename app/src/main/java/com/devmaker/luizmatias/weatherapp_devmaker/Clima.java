@@ -12,6 +12,24 @@ public class Clima {
     private double umidade; //porcentagem de umidade
     private double temperatura_minima; //temperatura minima em celsius
     private double temperatura_maxima; //temperatura maxima em celsius
+    private double nuvens; //porcentagem de nuvens no céu
+    private double vento; //velocidade do vento, em m/s
+
+    public double getVento() {
+        return vento;
+    }
+
+    public void setVento(double vento) {
+        this.vento = vento;
+    }
+
+    public double getNuvens() {
+        return nuvens;
+    }
+
+    public void setNuvens(double nuvens) {
+        this.nuvens = nuvens;
+    }
 
     public String getDescricao() {
         return descricao;
