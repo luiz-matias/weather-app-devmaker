@@ -14,6 +14,7 @@ public class Requests {
 
     private static String API_KEY = "9c86c1dbd23759616d140286f15459c3";
 
+    //método para realizar requisições GET para a Open Weather API
     public static String GET(String url){
         try{
 

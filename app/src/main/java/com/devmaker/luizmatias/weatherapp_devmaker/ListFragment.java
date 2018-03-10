@@ -170,6 +170,8 @@ public class ListFragment extends Fragment {
                         clima.setTemperatura_minima(jsonClima.getDouble("temp_min"));
                         clima.setTemperatura_maxima(jsonClima.getDouble("temp_max"));
                         clima.setUmidade(jsonClima.getDouble("humidity"));
+                        clima.setVento(jsonCidades.getJSONObject(i).getJSONObject("wind").getDouble("speed"));
+                        clima.setNuvens(jsonCidades.getJSONObject(i).getJSONObject("clouds").getDouble("all"));
 
                         cidade.setClima(clima);
 

@@ -6,20 +6,20 @@
 App que mostra informações de temperatura e previsão do tempo, utilizado como avaliação pela DevMaker.
 
 ## Funcionalidades
-* Listar a previsão do tempo de Curitiba, Florianópolis e Quedas do Iguaçu;
+* Listar a previsão do tempo de Curitiba, Florianópolis e Ivaiporã;
 * Acessar uma nova tela com detalhes da previsão do tempo da cidade;
-* Implementação do Google Maps para apresentar a localização atual do usuário, bem como as informações do seu local atual;
+* Implementação do Google Maps para apresentar a localização atual do usuário;
 
 ## Ferramentas utilizadas
 * **Recycler View** junto ao **Card View**;
-* Design Pattern do **Material Design**;
-* Biblioteca **[OkHttp](http://square.github.io/okhttp/)** para requisições REST;
+* Layout baseado no design pattern do **Material Design**;
+* Biblioteca **[OkHttp](http://square.github.io/okhttp/)** para requisições em web services;
 * Biblioteca **[Picasso](http://square.github.io/picasso/)** para processamento de imagens;
 * API **[Open Weather Map](https://openweathermap.org/api)** para recuperação de informações de previsão do tempo;
 
 ## Download
 * Para utilizar a demo, o dispositivo precisará dos seguintes requisitos para garantir a funcionalidade estável do app:
  - Sistema Operacional com versão igual ou superior ao Lollipop (5.0 - API 21);
- - Google Play Services instalado;
+ - Última versão da Google Play Services instalado;
 
-* A Demo do app será disponibilizada em breve.
+* [Clique aqui para realizar o download de uma demo do app]

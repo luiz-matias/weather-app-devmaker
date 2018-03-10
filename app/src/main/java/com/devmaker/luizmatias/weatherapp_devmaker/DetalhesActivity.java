@@ -1,9 +1,16 @@
 package com.devmaker.luizmatias.weatherapp_devmaker;
 
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Fade;
@@ -34,12 +41,12 @@ import java.util.Calendar;
 public class DetalhesActivity extends AppCompatActivity {
 
     private TextView textViewNome, textViewDescricao, textViewTemperatura, textViewTemperaturaMaxima, textViewTemperaturaMinima, textViewNuvens, textViewChuva, textViewVelocidadeVento;
-    private TextView textViewTemperatura1, textViewTemperatura2, textViewTemperaturaMaxima1, textViewTemperaturaMaxima2, textViewTemperaturaMinima1, textViewTemperaturaMinima2;
-    private TextView textViewDataPrevisao1, textViewDataPrevisao2;
+    private RecyclerView recyclerViewPrevisoes;
     private Button buttonTentarNovamente;
     private SwipeRefreshLayout swipeRefreshLayoutAtualizar;
     private LinearLayout linearLayoutSemInternet;
-    private ScrollView scrollViewInformacoes;
+    private NestedScrollView scrollViewInformacoes;
+    private LinearLayout linearLayoutVoltar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +56,10 @@ public class DetalhesActivity extends AppCompatActivity {
         getWindow().setReturnTransition(new Explode());
 
         //referencia as views
-        Toolbar toolbar = findViewById(R.id.toolbarDetalhes);
-        setSupportActionBar(toolbar);
-
-        //dia atual, views
+        buttonTentarNovamente = findViewById(R.id.buttonTentarNovamente);
+        swipeRefreshLayoutAtualizar = findViewById(R.id.swipeRefreshLayoutAtualizar);
+        linearLayoutSemInternet = findViewById(R.id.linearLayoutSemInternet);
+        scrollViewInformacoes = findViewById(R.id.scrollViewInformacoes);
         textViewNome = findViewById(R.id.textViewNome);
         textViewDescricao = findViewById(R.id.textViewDescricao);
         textViewTemperatura = findViewById(R.id.textViewTemperatura);
@@ -61,20 +68,118 @@ public class DetalhesActivity extends AppCompatActivity {
         textViewNuvens = findViewById(R.id.textViewNuvens);
         textViewChuva = findViewById(R.id.textViewChuva);
         textViewVelocidadeVento = findViewById(R.id.textViewVelocidadeVento);
+        recyclerViewPrevisoes = findViewById(R.id.recyclerViewPrevisoes);
+        linearLayoutVoltar = findViewById(R.id.linearLayoutVoltar);
 
-        //previsão dos próximos dois dias, views
-        textViewDataPrevisao1 = findViewById(R.id.textViewDataPrevisao1);
-        textViewDataPrevisao2 = findViewById(R.id.textViewDataPrevisao2);
-        textViewTemperatura1 = findViewById(R.id.textViewTemperatura1);
-        textViewTemperatura2 = findViewById(R.id.textViewTemperatura2);
-        textViewTemperaturaMaxima1 = findViewById(R.id.textViewTemperaturaMaxima1);
-        textViewTemperaturaMaxima2 = findViewById(R.id.textViewTemperaturaMaxima2);
-        textViewTemperaturaMinima1 = findViewById(R.id.textViewTemperaturaMinima1);
-        textViewTemperaturaMinima2 = findViewById(R.id.textViewTemperaturaMinima2);
+        //ação de voltar
+        linearLayoutVoltar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        //alimenta informações do tempo atual
+        final Intent intent = getIntent();
+        textViewNome.setText(intent.getExtras().getString("nome"));
+        String descricao = intent.getExtras().getString("descricao");
+        String descricao_formatada = descricao.substring(0, 1).toUpperCase() + descricao.substring(1);
+        textViewDescricao.setText(descricao_formatada);
+        textViewTemperatura.setText(String.format("%.0f", intent.getExtras().getDouble("temperatura")));
+        textViewTemperaturaMaxima.setText(String.format("%.0f", intent.getExtras().getDouble("temperatura_maxima")));
+        textViewTemperaturaMinima.setText(String.format("%.0f", intent.getExtras().getDouble("temperatura_minima")));
+        textViewChuva.setText(String.format("%.0f", intent.getExtras().getDouble("umidade")));
+        textViewNuvens.setText(String.format("%.0f", intent.getExtras().getDouble("nuvens")));
+        textViewVelocidadeVento.setText(String.format("%.1f", intent.getExtras().getDouble("vento")));
+
+        //recebe o id da cidade
+        final int id = intent.getExtras().getInt("id");
+
+        //seta as cores do swipe refresh layout
+        swipeRefreshLayoutAtualizar.setColorSchemeColors(getApplicationContext().getResources().getColor(R.color.colorAccent));
+
+        //ao atualizar, faz um fade out das informações da tela e inicia a requisição
+        swipeRefreshLayoutAtualizar.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+                animation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        linearLayoutSemInternet.setVisibility(View.GONE);
+                        scrollViewInformacoes.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
+                new requestPrevisao().execute("http://api.openweathermap.org/data/2.5/forecast?id="+id+"&units=metric&lang=pt");
+                scrollViewInformacoes.startAnimation(animation);
+
+            }
+        });
+
+        //ação de carregar novamente
+        buttonTentarNovamente.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new requestPrevisao().execute("http://api.openweathermap.org/data/2.5/forecast?id="+id+"&units=metric&lang=pt");
+            }
+        });
 
 
+        //Inicia animação de fade out na primeira requisição
+        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                linearLayoutSemInternet.setVisibility(View.GONE);
+                scrollViewInformacoes.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        scrollViewInformacoes.startAnimation(animation);
+
+        new requestPrevisao().execute("http://api.openweathermap.org/data/2.5/forecast?id="+id+"&units=metric&lang=pt");
     }
 
+    //método que configura e apresenta informações do recycler view
+    private void loadList(ArrayList<Previsao> previsoes) {
+        PrevisoesAdapter previsoesAdapter = new PrevisoesAdapter(getApplicationContext(), previsoes);
+        recyclerViewPrevisoes.setOnFlingListener(null);
+        recyclerViewPrevisoes.setNestedScrollingEnabled(false);
+        recyclerViewPrevisoes.setAdapter(previsoesAdapter);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+
+        SnapHelper helper = new LinearSnapHelper();
+        helper.attachToRecyclerView(recyclerViewPrevisoes);
+
+
+        recyclerViewPrevisoes.setLayoutManager(layoutManager);
+        recyclerViewPrevisoes.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    //request que recebe todas as previsões das próximas horas e dias da cidade
     private class requestPrevisao extends AsyncTask<String, Void, String> {
 
         @Override
@@ -125,21 +230,20 @@ public class DetalhesActivity extends AppCompatActivity {
                         clima.setUmidade(jsonClima.getDouble("humidity"));
                         clima.setNuvens(jsonPrevisoes.getJSONObject(i).getJSONObject("clouds").getDouble("all"));
                         clima.setVento(jsonPrevisoes.getJSONObject(i).getJSONObject("wind").getDouble("speed"));
+                        clima.setDescricao(jsonPrevisoes.getJSONObject(i).getJSONArray("weather").getJSONObject(0).getString("description"));
 
                         cidade.setClima(clima);
 
                         previsao.setCidade(cidade);
 
-                        previsao.setTimestamp(jsonPrevisoes.getJSONObject(i).getInt("dt"));
+                        previsao.setTimestamp(jsonPrevisoes.getJSONObject(i).getString("dt_txt"));
 
 
                         previsoes.add(previsao);
                     }
 
-                    //a partir de todas as previsões, resume as previsões dos próximos dois dias
-                    ArrayList<Previsao> previsoesDias = getResumoDias(previsoes);
-
-
+                    //alimenta as previsões no recycler view
+                    loadList(previsoes);
 
                 }catch (Exception e) {
                     //erro na requisição
@@ -161,30 +265,5 @@ public class DetalhesActivity extends AppCompatActivity {
         }
     }
 
-    private ArrayList<Previsao> getResumoDias(ArrayList<Previsao> previsoes) {
-
-        ArrayList<Previsao> previsoesDiarias = new ArrayList<>();
-
-        try{
-
-            for(int i = 0; i < previsoes.size(); i++){
-
-                Previsao previsao = previsoes.get(i);
-
-                //conversão de timestamp UTC para um calendar formatado para o horário de Curitiba
-                SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(simpleDateFormat.parse(simpleDateFormat.format(new java.util.Date (previsao.getTimestamp()-10800))));
-
-                //todo algoritmo
-
-            }
-
-        }catch (ParseException e){
-
-        }
-
-        return previsoesDiarias;
-    }
-
 }
+

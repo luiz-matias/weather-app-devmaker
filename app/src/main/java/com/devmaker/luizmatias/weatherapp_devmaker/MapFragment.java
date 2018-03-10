@@ -121,7 +121,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
 
                 //alimenta o bottom sheet com informações, e depois o expande
-                Cidade cidade = (Cidade) marker.getTag();
+                final Cidade cidade = (Cidade) marker.getTag();
                 TextView textViewNome = view.findViewById(R.id.textViewNome);
                 TextView textViewDescricao = view.findViewById(R.id.textViewDescricao);
                 TextView textViewTemperatura = view.findViewById(R.id.textViewTemperatura);
@@ -140,11 +140,44 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 fabDetalhes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(new Intent(getContext(), DetalhesActivity.class));
+
+                        Intent intent = new Intent(getContext(), DetalhesActivity.class);
+                        intent.putExtra("id", cidade.getId());
+                        intent.putExtra("nome", cidade.getNome());
+                        intent.putExtra("descricao", cidade.getClima().getDescricao());
+                        intent.putExtra("temperatura", cidade.getClima().getTemperatura());
+                        intent.putExtra("temperatura_maxima", cidade.getClima().getTemperatura_maxima());
+                        intent.putExtra("temperatura_minima", cidade.getClima().getTemperatura_minima());
+                        intent.putExtra("umidade", cidade.getClima().getUmidade());
+                        intent.putExtra("nuvens", cidade.getClima().getNuvens());
+                        intent.putExtra("vento", cidade.getClima().getVento());
+
+                        startActivity(intent);
                     }
                 });
 
                 return false;
+            }
+        });
+
+        //ação quando o usuário clica no dialog (InfoWindow) do marker
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+
+                Cidade cidade = (Cidade) marker.getTag();
+                Intent intent = new Intent(getContext(), DetalhesActivity.class);
+                intent.putExtra("id", cidade.getId());
+                intent.putExtra("nome", cidade.getNome());
+                intent.putExtra("descricao", cidade.getClima().getDescricao());
+                intent.putExtra("temperatura", cidade.getClima().getTemperatura());
+                intent.putExtra("temperatura_maxima", cidade.getClima().getTemperatura_maxima());
+                intent.putExtra("temperatura_minima", cidade.getClima().getTemperatura_minima());
+                intent.putExtra("umidade", cidade.getClima().getUmidade());
+                intent.putExtra("nuvens", cidade.getClima().getNuvens());
+                intent.putExtra("vento", cidade.getClima().getVento());
+
+                startActivity(intent);
             }
         });
 
@@ -156,6 +189,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 fabDetalhes.setVisibility(View.GONE);
             }
         });
+
+
 
         //realiza requisição das cidades de Curitiba, Florianópolis e Ivaiporã
         new requestCidades().execute("http://api.openweathermap.org/data/2.5/group?id=3464975,6323121,3460495&units=metric&lang=pt");
@@ -230,6 +265,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         clima.setTemperatura_minima(jsonClima.getDouble("temp_min"));
                         clima.setTemperatura_maxima(jsonClima.getDouble("temp_max"));
                         clima.setUmidade(jsonClima.getDouble("humidity"));
+                        clima.setVento(jsonCidades.getJSONObject(i).getJSONObject("wind").getDouble("speed"));
+                        clima.setNuvens(jsonCidades.getJSONObject(i).getJSONObject("clouds").getDouble("all"));
 
                         cidade.setClima(clima);
 

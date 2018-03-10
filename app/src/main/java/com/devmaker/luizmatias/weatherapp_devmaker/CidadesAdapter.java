@@ -64,7 +64,7 @@ public class CidadesAdapter extends RecyclerView.Adapter<CidadesAdapter.ViewHold
             super(itemView);
         }
 
-        public void setData(Cidade cidade, int position) {
+        public void setData(final Cidade cidade, int position) {
 
             //seta as referencias das views
             imageViewBackgroundCidade = itemView.findViewById(R.id.imageViewBackgroundCidade);
@@ -93,16 +93,17 @@ public class CidadesAdapter extends RecyclerView.Adapter<CidadesAdapter.ViewHold
                 public void onClick(View v) {
 
                     Intent intent = new Intent(context, DetalhesActivity.class);
-                    intent.putExtra("background_image", ViewCompat.getTransitionName(imageViewBackgroundCidade));
+                    intent.putExtra("id", cidade.getId());
+                    intent.putExtra("nome", cidade.getNome());
+                    intent.putExtra("descricao", cidade.getClima().getDescricao());
+                    intent.putExtra("temperatura", cidade.getClima().getTemperatura());
+                    intent.putExtra("temperatura_maxima", cidade.getClima().getTemperatura_maxima());
+                    intent.putExtra("temperatura_minima", cidade.getClima().getTemperatura_minima());
+                    intent.putExtra("umidade", cidade.getClima().getUmidade());
+                    intent.putExtra("nuvens", cidade.getClima().getNuvens());
+                    intent.putExtra("vento", cidade.getClima().getVento());
 
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            activity,
-                            imageViewBackgroundCidade,
-                            ViewCompat.getTransitionName(imageViewBackgroundCidade));
-
-                    context.startActivity(intent, options.toBundle());
-
-                    context.startActivity(new Intent(context, DetalhesActivity.class));
+                    context.startActivity(intent);
                 }
             });
 

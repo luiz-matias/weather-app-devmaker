@@ -6,14 +6,14 @@ package com.devmaker.luizmatias.weatherapp_devmaker;
 
 public class Previsao {
 
-    private int timestamp; //timestamp do horário da previsao
+    private String timestamp; //timestamp do horário da previsao, no formato "ano-mes-dia hora:minuto:segundo", no horário UTC
     private Cidade cidade; //objeto da cidade com a previsão do tempo
 
-    public int getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
