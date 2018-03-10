@@ -22,4 +22,4 @@ App que mostra informações de temperatura e previsão do tempo, utilizado como
  - Sistema Operacional com versão igual ou superior ao Lollipop (5.0 - API 21);
  - Última versão da Google Play Services instalado;
 
-* [Clique aqui para realizar o download de uma demo do app]
+* [Clique aqui para realizar o download de uma demo do app](https://goo.gl/mctKak);
