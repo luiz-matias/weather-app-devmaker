@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Weather App - Devmaker</string>
+    <string name="erroInternet">Sem conexão com a internet!</string>
+    <string name="erroInternetDescricao">Verifique sua conexão e tente novamente.</string>
+    <string name="tentarNovamente">Tentar novamente</string>
+    <string name="mapTab">Mapa</string>
+    <string name="listTab">Lista</string>
+    <string name="acessarDetalhes">Detalhes</string>
+    <string name="acessarMaisDetalhes">Mais detalhes</string>
+</resources>
