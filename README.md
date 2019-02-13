@@ -1,3 +1,6 @@
+# Atenção!
+Este projeto é antigo e utiliza de tecnologias antigas e não tão mais utilizadas na plataforma Android.
+
 [![DevMaker](https://i.imgur.com/Yh0YIly.png)](http://devmaker.com.br/)
 
 # Weather App - DevMaker
